@@ -27,13 +27,13 @@ public class ProductServiceImpl implements ProductServiceI {
         try {
             if (product.getProductId() != null) {
                 Optional<Product> productValidated  = productRepository.findById(product.getProductId());
-                if (productValidated.isPresent() && product.getProductId().equals(productValidated.get().getProductId())) {
-                    throw  new SqlParseException("Error al guardar el producto, producto ya existente");
+                if (productValidated.isPresent()) {
+                    throw new IllegalArgumentException("Error al guardar el producto, producto ya existente");
                 }
             }
             return productRepository.save(product);
-        }catch (Exception e) {
-            throw  new SqlParseException("Error al guardar el producto" + e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error al guardar el producto: " + e.getMessage());
         }
     }
 

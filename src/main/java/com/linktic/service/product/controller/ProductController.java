@@ -2,6 +2,7 @@ package com.linktic.service.product.controller;
 
 import com.linktic.service.product.entity.Product;
 import com.linktic.service.product.service.ProductServiceI;
+import com.linktic.service.product.util.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,48 +34,44 @@ public class ProductController {
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> guardarProducto(@RequestBody Product product) {
         Map<String, Object> response = new HashMap<>();
         try {
             Product savedProduct = productServiceI.guardarProducto(product);
-            if (savedProduct != null && savedProduct.getProductId() != null) {
-                response.put(ESTATUS, HttpStatus.OK);
-                response.put(MESSEGUE, "Producto guardado exitosamente");
-                response.put(PRODUCT, savedProduct);
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
-            } else {
-                response.put(ESTATUS, HttpStatus.BAD_REQUEST);
-                response.put(MESSEGUE, "Error al guardar el producto");
-                response.put(PRODUCT, null);
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
+            response.put(Constant.ESTATUS, HttpStatus.CREATED);
+            response.put(Constant.MESSEGUE, "Producto guardado exitosamente");
+            response.put(Constant.PRODUCT, savedProduct);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            response.put(Constant.ESTATUS, HttpStatus.BAD_REQUEST);
+            response.put(Constant.MESSEGUE, e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            response.put(MESSEGUE, "Error al guardar el producto");
+            response.put(Constant.ESTATUS, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put(Constant.MESSEGUE, "Error al guardar el producto");
             response.put("cause", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> obtenerProductoPorId(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
         try {
-
-
-        Product product = productServiceI.obtenerProductoPorId(id);
-        if (product != null) {
-            response.put(ESTATUS, HttpStatus.OK);
-            response.put(MESSEGUE, "Producto ha obtenido exitosamente");
-            response.put(PRODUCT, product);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } else {
-            response.put(ESTATUS, HttpStatus.NOT_FOUND);
-            response.put(MESSEGUE, "Error al obtener el producto");
-            response.put(PRODUCT, null);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-        }catch (Exception e) {
+            Product product = productServiceI.obtenerProductoPorId(id);
+            if (product != null) {
+                response.put(ESTATUS, HttpStatus.OK);
+                response.put(MESSEGUE, "Producto obtenido exitosamente");
+                response.put(PRODUCT, product);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.put(ESTATUS, HttpStatus.NOT_FOUND);
+                response.put(MESSEGUE, "Producto no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
             response.put(ESTATUS, HttpStatus.INTERNAL_SERVER_ERROR);
             response.put(MESSEGUE, "Ocurrió un error al procesar la solicitud");
             response.put("cause", e.getMessage());
@@ -92,3 +89,4 @@ public class ProductController {
         }
     }
 }
+
