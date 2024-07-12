@@ -8,4 +8,7 @@ public class Constant {
     public static final String SIGNING_REGION = "us-east-1";
     public static final String ACCESS_KEY = "test";
     public static final String SECRET_KEY = "test";
+    public static final String MESSEGUE = "message";
+    public static final String PRODUCT = "product";
+    public static final String ESTATUS = "status";
 }
